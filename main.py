@@ -170,8 +170,11 @@ def get_email_content(email_message):
 
 async def send_telegram_message(message, is_junk=False):
     config = load_config()
-    TELEGRAM_BOT_TOKEN = config.TELEGRAM_BOT_TOKEN  # 从配置文件中加载
-    # 判断是否发送到Junk Telegram对话
+    TELEGRAM_BOT_TOKEN = config.TELEGRAM_BOT_TOKEN
+    # 未设置 TELEGRAM_JUNK_CHAT_ID，跳过垃圾邮件转发
+    if is_junk and not hasattr(config, 'TELEGRAM_JUNK_CHAT_ID'):
+        logger.info("未设置 TELEGRAM_JUNK_CHAT_ID，跳过垃圾邮件转发")
+        return
     TELEGRAM_CHAT_ID = config.TELEGRAM_JUNK_CHAT_ID if is_junk else config.TELEGRAM_CHAT_ID
     app = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
     await app.bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=message, parse_mode='HTML')
