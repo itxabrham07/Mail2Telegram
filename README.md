@@ -64,7 +64,7 @@ EMAILS = [
 ]
 TELEGRAM_BOT_TOKEN = 'BOT_TOKEN'
 TELEGRAM_CHAT_ID = 'CHAT_ID'  # 主要邮件转发到的chat_id，可以是自己的user_id
-TELEGRAM_JUNK_CHAT_ID = 'CHAT_ID' # 垃圾邮件转发到的chat_id，可以是自己的user_id
+TELEGRAM_JUNK_CHAT_ID = 'CHAT_ID' # 把垃圾邮件发到的的telegram chat id，如果未设置(TELEGRAM_JUNK_CHAT_ID='')，则跳过垃圾邮件转发
 RETRY_LIMIT = 5  # 失败后重试次数
 RETRY_DELAY = 5  # 失败重试时间间隔 
 RECONNECT_INTERVAL = 1800  # 主动断开重连时间，单位秒 
