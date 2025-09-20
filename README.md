@@ -1,52 +1,42 @@
-![img](./logo/logo-title.png)
-
 <div align="center">
-  <a href="./README.md">中文</a> |
-  <a href="./readme/README_EN.md">English</a>
+<a href="./README.md">中文</a> |
+<a href="./readme/README_EN.md">English</a>
 </div>
 <br>
 
-
 <div align="center">
-
-![Docker](https://img.shields.io/badge/-Docker-2496ED?style=flat-square&logo=docker&logoColor=white) [![License: GPL-3.0](https://img.shields.io/badge/License-GPL%203.0-4CAF50?style=flat-square)](https://github.com/Heavrnl/mail2telegram/blob/master/LICENSE) 
-
-
-
 
 </div>
 
-# Mail2Telegram
+Mail2Telegram
+Mail2Telegram can monitor multiple email accounts in real-time and forward emails to Telegram. An extended feature supports extracting verification codes from emails and sending them to the clipboard.
 
-Mail2Telegram 可以实时监控多个邮箱并将邮件发送到 Telegram 中。扩展功能支持提取邮件验证码后发送到剪贴板
+Quick Start
+Prerequisites
+Using Gmail as an example:
 
-## 快速启动
+Log in to Gmail and enable IMAP access in the settings.
 
-### 准备工作
+If you have 2FA enabled, please refer to this link to get an app password.
 
-以Gmail为例：
-1. 登录Gmail，在设置中开启IMAP访问服务
-2. 若开启2FA，请参考[这里](https://support.google.com/mail/answer/185833?hl=zh-Hans)获取应用密码
-3. 获取到应用密码后，在config.py中的PASSWORD填写应用密码
+After obtaining the app password, enter it for the PASSWORD in config.py.
 
-（其他邮箱同理，请自行前往邮箱设置开启IMAP访问服务）
->**注意**：由于微软修改了outlook的连接方式，导致outlook邮箱现在无法在本项目中使用。若有需求，可以设置邮件转发到本项目所使用的邮箱
+(The process is similar for other email providers; please go to your email settings to enable IMAP access.)
 
+Note: Due to changes in how Microsoft handles Outlook connections, Outlook email accounts cannot currently be used with this project. If needed, you can set up email forwarding from your Outlook account to an email account used by this project.
 
-### 部署步骤
+Deployment Steps
+Clone the repository and enter the project directory:
 
-1. 克隆仓库并进入项目目录：
-
-```bash
-git clone https://github.com/Heavrnl/Mail2Telegram.git
+git clone [https://github.com/Heavrnl/Mail2Telegram.git](https://github.com/Heavrnl/Mail2Telegram.git)
 cd ./Mail2Telegram
-```
 
-2. 配置 `config.py`：
-   - 复制 `config-template.py` 并重命名为 `config.py`
-   - 填写必要的配置信息
+Configure config.py:
 
-```python
+Copy config-template.py and rename it to config.py.
+
+Fill in the necessary configuration information.
+
 EMAILS = [
     {
         'EMAIL': 'example@gmail.com',
@@ -60,120 +50,97 @@ EMAILS = [
         'IMAP_SERVER': 'imap.qq.com',
         'IMAP_SERVER_PORT': 993,
     },
-    # 可以添加更多邮箱配置... 
+    # You can add more email configurations...
 ]
 TELEGRAM_BOT_TOKEN = 'BOT_TOKEN'
-TELEGRAM_CHAT_ID = 'CHAT_ID'  # 主要邮件转发到的chat_id，可以是自己的user_id
-TELEGRAM_JUNK_CHAT_ID = 'CHAT_ID' # 把垃圾邮件转发到的chat_id，如果未设置(TELEGRAM_JUNK_CHAT_ID='')，则跳过垃圾邮件转发
-RETRY_LIMIT = 5  # 失败后重试次数
-RETRY_DELAY = 5  # 失败重试时间间隔 
-RECONNECT_INTERVAL = 1800  # 主动断开重连时间，单位秒 
-RETRY_PAUSE = 600  # 重试多次失败后，停止时间，单位秒 
-```
+TELEGRAM_CHAT_ID = 'CHAT_ID'  # The chat_id where primary emails are forwarded, can be your own user_id
+TELEGRAM_JUNK_CHAT_ID = 'CHAT_ID' # The chat_id where junk emails are forwarded. If not set (TELEGRAM_JUNK_CHAT_ID=''), junk email forwarding will be skipped.
+RETRY_LIMIT = 5               # Number of retry attempts after a failure
+RETRY_DELAY = 5               # Delay between retry attempts
+RECONNECT_INTERVAL = 1800     # Interval for active disconnection and reconnection, in seconds
+RETRY_PAUSE = 600             # Pause duration after multiple failed retries, in seconds
 
-3. 启动服务：
+Start the service:
 
-```bash
 docker-compose up -d
-```
 
-4. 当您收到 Telegram 机器人发送的"登录成功"消息时，表示服务已成功运行。
+When you receive a "Login successful" message from the Telegram bot, it means the service is running successfully.
 
-## 扩展功能
+Extended Features
+Extract Email Verification Codes and Send to Clipboard
+This supports extracting verification codes using local regex matching and AI (GitHub Models/Gemini). Specific configuration details are provided below.
 
-### 提取邮件验证码并发送至剪贴板
-支持本地正则匹配和AI（[GitHub Models](https://docs.github.com/zh/github-models/prototyping-with-ai-models)/[Gemini](https://aistudio.google.com/apikey)）提取验证码，具体配置在下面说明
+Deploy the clipboard synchronization service Jeric-X/SyncClipboard. Please refer to that project for deployment instructions.
 
-1. 部署剪贴板同步服务 [Jeric-X/SyncClipboard](https://github.com/Jeric-X/SyncClipboard)，请自行前往该项目查看部署方法
+Deploy the verification code extraction service Heavrnl/ExtractVerificationCode.
 
-2. 部署验证码提取服务 [Heavrnl/ExtractVerificationCode](https://github.com/Heavrnl/ExtractVerificationCode)
+git clone [https://github.com/Heavrnl/ExtractVerificationCode](https://github.com/Heavrnl/ExtractVerificationCode)
 
-```bash
-git clone https://github.com/Heavrnl/ExtractVerificationCode
-```
-```bash
 cd ExtractVerificationCode
-```
 
-配置 `.env` 文件，把上面部署好的剪贴板同步服务相关配置填入：
-```bash
+Configure the .env file, filling in the relevant settings for the clipboard synchronization service you just deployed:
+
 cp .env.example .env
-```
-```ini
-# 选择使用的API类型：azure(GitHub Models) 或 gemini
+
+# Select the API type to use: azure (GitHub Models) or gemini
 API_TYPE=gemini
 
-# 是否启用本地正则匹配提取验证码（启用后会优先使用本地匹配，失败后再尝试API）
+# Enable local regex matching for verification code extraction (If enabled, local matching is prioritized; the API is used as a fallback)
 USE_LOCAL=false
 
-# Prompt模板
-PROMPT_TEMPLATE=从以下文本中提取验证码。只输出验证码，不要有任何其他文字。如果没有验证码，只输出'None'。\n\n文本：{input_text}\n\n验证码：
+# Prompt template
+PROMPT_TEMPLATE=Extract the verification code from the following text. Output only the verification code, with no other text. If there is no verification code, output only 'None'.\n\nText: {input_text}\n\nVerification Code:
 
-# Azure API相关配置
-AZURE_ENDPOINT=https://models.inference.ai.azure.com
+# Azure API related configuration
+AZURE_ENDPOINT=[https://models.inference.ai.azure.com](https://models.inference.ai.azure.com)
 AZURE_MODEL_NAME=gpt-4o-mini
-# Azure API认证Token（使用GitHub Token进行认证）
+# Azure API authentication token (authenticate using a GitHub Token)
 GITHUB_TOKEN=
 
-# Gemini API相关配置
+# Gemini API related configuration
 GEMINI_API_KEY=
 GEMINI_MODEL=gemini-1.5-flash
 
-
-
-# 剪贴板同步配置
+# Clipboard synchronization configuration
 SYNC_URL=your_sync_url
 SYNC_USERNAME=your_username
 SYNC_TOKEN=your_token
 
-# 是否开启调试模式（true/false）
+# Enable debug mode (true/false)
 DEBUG_MODE=false
-```
 
+Note: For the most accurate verification code extraction, it is recommended to use an AI model. Local regex matching may have inaccuracies.
 
-> **注意**：若想要最精确的提取验证码，请使用ai模型，本地正则匹配可能会有误差
+Start the service:
 
-启动服务：
-```bash
 docker-compose up -d
-```
 
-3.修改我们本项目中的`docker-compose.yml`文件，把`ENABLE_EVC=false`改为`ENABLE_EVC=true`
+In our main project's docker-compose.yml file, change ENABLE_EVC=false to ENABLE_EVC=true.
 
+Configure the tools/send_code.py file:
 
-配置 `tools/send_code.py` 文件：
-- 如果验证码提取服务与本项目部署在同一服务器且使用默认端口(5788)，则无需修改
-- 否则需要修改服务地址和端口
+If the verification code extraction service is deployed on the same server as this project and uses the default port (5788), no changes are needed.
 
-```python
-# 替换为您的 ExtractVerificationCode 应用程序的实际地址
+Otherwise, you need to modify the service address and port.
+
+# Replace with the actual address of your ExtractVerificationCode application
 url = 'http://evc:5788/evc'
-```
 
-启动
-```bash
+Start:
+
 docker-compose up -d
-```
 
-## 关于隐私
+Regarding Privacy
+The ExtractVerificationCode project takes the following security measures when processing email content:
 
-ExtractVerificationCode 项目在处理邮件内容时采取了以下安全措施：
+Email Text Sanitization: Sensitive information is automatically removed before the text is sent to the AI model.
 
-1. 邮件文本脱敏处理：在发送给 AI 模型前会自动移除敏感信息
-2. 文本筛选：只有包含验证码相关内容的邮件才会被发送给AI模型，不会发送全部邮件
+Content Filtering: Only emails containing content related to verification codes are sent to the AI model; not all emails are sent.
 
-若还是怕AI提供商获取你的信息，可以本地部署大模型或者只用本地正则匹配提取验证码
+If you are still concerned about AI providers accessing your information, you can deploy a large language model locally or use only the local regex matching for verification code extraction.
 
+Acknowledgments
+Jeric-X/SyncClipboard - A cross-platform clipboard synchronization tool.
 
-
-## 致谢
-
-- [Jeric-X/SyncClipboard](https://github.com/Jeric-X/SyncClipboard) - 跨平台剪贴板同步工具
-
-
-## 捐赠
-
-如果你觉得这个项目对你有帮助，欢迎通过以下方式请我喝杯咖啡：
-
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/0heavrnl)
-
+Donation
+If you find this project helpful, feel free to buy me a coffee through the following link:
