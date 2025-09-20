@@ -5,3 +5,4 @@ config.yml
 logs/*
 config.py
 logo/logo-title.svg
+.env
